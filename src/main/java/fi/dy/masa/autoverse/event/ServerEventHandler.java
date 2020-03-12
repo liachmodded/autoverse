@@ -1,5 +1,6 @@
 package fi.dy.masa.autoverse.event;
 
+import fi.dy.masa.autoverse.block.BlockPipe;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -50,7 +51,7 @@ public class ServerEventHandler
         {
             Block block = event.getWorld().getBlockState(event.getPos()).getBlock();
 
-            if (block == AutoverseBlocks.PIPE || block == AutoverseBlocks.CIRCUIT)
+            if (block instanceof BlockPipe || block == AutoverseBlocks.CIRCUIT)
             {
                 block.onBlockClicked(event.getWorld(), event.getPos(), event.getEntityPlayer());
                 event.setCanceled(true);

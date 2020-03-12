@@ -16,9 +16,9 @@ public class TileEntityPipeRoundRobin extends TileEntityPipeDirectional
     protected final EnumFacing[][] roundRobinOutputSidesPerSide;
     private final byte outputSideIndices[] = new byte[6];
 
-    public TileEntityPipeRoundRobin()
+    public TileEntityPipeRoundRobin(boolean noPacket)
     {
-        super(ReferenceNames.NAME_TILE_ENTITY_PIPE_ROUNDROBIN);
+        super(ReferenceNames.NAME_TILE_ENTITY_PIPE_ROUNDROBIN, noPacket);
 
         this.roundRobinOutputSidesPerSide = new EnumFacing[6][];
 

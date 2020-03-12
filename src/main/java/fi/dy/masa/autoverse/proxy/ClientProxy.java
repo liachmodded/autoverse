@@ -1,5 +1,6 @@
 package fi.dy.masa.autoverse.proxy;
 
+import fi.dy.masa.autoverse.reference.ReferenceNames;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMap;
@@ -110,7 +111,8 @@ public class ClientProxy extends CommonProxy
         ModelLoader.setCustomStateMapper(AutoverseBlocks.CIRCUIT, new BakedModelCircuit.StateMapper());
         ModelLoaderRegistry.registerLoader(new BakedModelCircuit.ModelLoaderCircuit());
 
-        ModelLoader.setCustomStateMapper(AutoverseBlocks.PIPE, new BakedModelPipe.StateMapper());
+        ModelLoader.setCustomStateMapper(AutoverseBlocks.PIPE, new BakedModelPipe.StateMapper(ReferenceNames.NAME_BLOCK_PIPE));
+        ModelLoader.setCustomStateMapper(AutoverseBlocks.OPAQUE_PIPE, new BakedModelPipe.StateMapper(ReferenceNames.NAME_BLOCK_OPAQUE_PIPE));
         ModelLoaderRegistry.registerLoader(new BakedModelPipe.ModelLoaderPipe());
 
         ModelLoader.setCustomStateMapper(AutoverseBlocks.REDSTONE_EMITTER, new BakedModelRedstoneEmitter.StateMapper());
@@ -148,6 +150,10 @@ public class ClientProxy extends CommonProxy
         registerItemBlockModel(AutoverseBlocks.PIPE, 1, "type=extraction");
         registerItemBlockModel(AutoverseBlocks.PIPE, 2, "type=directional");
         registerItemBlockModel(AutoverseBlocks.PIPE, 3, "type=roundrobin");
+        registerItemBlockModel(AutoverseBlocks.OPAQUE_PIPE, 1, "type=basic");
+        registerItemBlockModel(AutoverseBlocks.OPAQUE_PIPE, 2, "type=extraction");
+        registerItemBlockModel(AutoverseBlocks.OPAQUE_PIPE, 3, "type=directional");
+        registerItemBlockModel(AutoverseBlocks.OPAQUE_PIPE, 4, "type=roundrobin");
         registerItemBlockModel(AutoverseBlocks.REDSTONE_EMITTER, 0, "type=basic");
         registerItemBlockModel(AutoverseBlocks.REDSTONE_EMITTER, 1, "type=advanced");
         registerItemBlockModel(AutoverseBlocks.SENSOR, 0, "inventory");

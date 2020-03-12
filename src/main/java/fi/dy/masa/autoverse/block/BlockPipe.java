@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -71,11 +72,14 @@ public class BlockPipe extends BlockAutoverseInventory
         CONNECTIONS.add(CONN_WEST);
         CONNECTIONS.add(CONN_EAST);
     }
+    
+    private final boolean opaque;
 
-    public BlockPipe(String name, float hardness, float resistance, int harvestLevel, Material material)
+    public BlockPipe(String name, boolean opaque, float hardness, float resistance, int harvestLevel, Material material)
     {
         super(name, hardness, resistance, harvestLevel, material);
 
+        this.opaque = opaque;
         this.hasFacing = false;
         this.getFacingFromTE = false;
         this.createHilightBoxMap();
@@ -131,12 +135,13 @@ public class BlockPipe extends BlockAutoverseInventory
     @Override
     protected TileEntityAutoverse createTileEntityInstance(World worldIn, IBlockState state)
     {
+        boolean noPacket = this.opaque;
         switch (state.getValue(TYPE))
         {
-            case EXTRACTION:    return new TileEntityPipeExtraction();
-            case DIRECTIONAL:   return new TileEntityPipeDirectional();
-            case ROUNDROBIN:    return new TileEntityPipeRoundRobin();
-            default:            return new TileEntityPipe();
+            case EXTRACTION:    return new TileEntityPipeExtraction(noPacket);
+            case DIRECTIONAL:   return new TileEntityPipeDirectional(noPacket);
+            case ROUNDROBIN:    return new TileEntityPipeRoundRobin(noPacket);
+            default:            return new TileEntityPipe(noPacket);
         }
     }
 

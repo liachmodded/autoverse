@@ -44,6 +44,7 @@ public class TileEntityPipe extends TileEntityAutoverseInventory implements ISyn
 {
     private final IItemHandler[] inputInventories;
     protected final EnumFacing[][] validOutputSidesPerSide;
+    private final boolean noPacket;
     private final int scheduledTimes[] = new int[6];
     private int connectedSidesMask;
     private int disabledSidesMask;
@@ -61,14 +62,21 @@ public class TileEntityPipe extends TileEntityAutoverseInventory implements ISyn
     public byte outputDirections[] = new byte[6];
     public float partialTicksLast;
 
+    @Deprecated
     public TileEntityPipe()
     {
-        this(ReferenceNames.NAME_BLOCK_PIPE);
+        this(ReferenceNames.NAME_BLOCK_PIPE, false);
+    }
+    
+    public TileEntityPipe(boolean noPacket)
+    {
+        this(ReferenceNames.NAME_BLOCK_PIPE, noPacket);
     }
 
-    protected TileEntityPipe(String name)
+    protected TileEntityPipe(String name, boolean noPacket)
     {
         super(name);
+        this.noPacket = noPacket;
 
         this.itemHandlerBase = new ItemStackHandlerTileEntity(0, 6, Configs.pipeMaxStackSize, false, "Items", this);
         this.itemHandlerBase.setStackLimit(1);
@@ -530,13 +538,12 @@ public class TileEntityPipe extends TileEntityAutoverseInventory implements ISyn
                 int count = movedAll ? 0 : sizeOrig - sizeNew;
                 this.itemHandlerBase.extractItem(inputSlot, sizeOrig - sizeNew, false);
 
-                if (isPipe)
-                {
-                    this.sendPacketPushToAdjacentPipe(inputSlot, outputSide.getIndex(), ((TileEntityPipe) te).getDelay(), count);
-                }
-                else
-                {
-                    this.sendPacketMoveItemOut(inputSlot, outputSide.getIndex(), count);
+                if (!noPacket) {
+                    if (isPipe) {
+                        this.sendPacketPushToAdjacentPipe(inputSlot, outputSide.getIndex(), ((TileEntityPipe) te).getDelay(), count);
+                    } else {
+                        this.sendPacketMoveItemOut(inputSlot, outputSide.getIndex(), count);
+                    }
                 }
             }
 
@@ -722,7 +729,7 @@ public class TileEntityPipe extends TileEntityAutoverseInventory implements ISyn
         {
             this.stacksLast.set(slot, stack);
 
-            if (this.disableNeighorNotification == false)
+            if (this.disableNeighorNotification == false && !noPacket)
             {
                 if (stack.isEmpty() == false)
                 {
@@ -753,7 +760,7 @@ public class TileEntityPipe extends TileEntityAutoverseInventory implements ISyn
                     IBlockState state = world.getBlockState(pos);
                     Block block = state.getBlock();
 
-                    if (block != AutoverseBlocks.PIPE)
+                    if (!(block instanceof BlockPipe))
                     {
                         block.onNeighborChange(world, pos, this.getPos());
 

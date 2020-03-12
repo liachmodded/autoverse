@@ -36,6 +36,7 @@ public class Configs
     public static boolean disableBlockMachineFrame;
     public static boolean disableBlockMuxer;
     public static boolean disableBlockPipe;
+    public static boolean disableBlockOpaquePipe;
     public static boolean disableBlockRedstoneEmitter;
     public static boolean disableBlockSensor;
     public static boolean disableBlockSequenceDetector;
@@ -157,6 +158,7 @@ public class Configs
         disableBlockMachineFrame            = conf.get(CATEGORY_BLOCK_DISABLE, "disableBlockMachineFrame", false).getBoolean();
         disableBlockMuxer                   = conf.get(CATEGORY_BLOCK_DISABLE, "disableBlockMuxer", false).getBoolean();
         disableBlockPipe                    = conf.get(CATEGORY_BLOCK_DISABLE, "disableBlockPipe", false).getBoolean();
+        disableBlockOpaquePipe              = conf.get(CATEGORY_BLOCK_DISABLE, "disableBlockOpaquePipe", false).getBoolean();
         disableBlockRedstoneEmitter         = conf.get(CATEGORY_BLOCK_DISABLE, "disableBlockRedstoneEmitter", false).getBoolean();
         disableBlockSensor                  = conf.get(CATEGORY_BLOCK_DISABLE, "disableBlockSensor", false).getBoolean();
         disableBlockSequenceDetector        = conf.get(CATEGORY_BLOCK_DISABLE, "disableBlockSequenceDetector", false).getBoolean();

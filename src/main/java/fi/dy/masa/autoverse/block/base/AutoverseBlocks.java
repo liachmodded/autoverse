@@ -31,7 +31,8 @@ public class AutoverseBlocks
     public static final BlockAutoverse INVENTORY_READER         = new BlockInventoryReader(ReferenceNames.NAME_BLOCK_INVENTORY_READER,              4.0f, 10f, 1, Material.ROCK);
     public static final BlockAutoverse MACHINE_FRAME            = new BlockMachineFrame(ReferenceNames.NAME_BLOCK_MACHINE_FRAME,                    4.0f, 10f, 1, Material.ROCK);
     public static final BlockAutoverse MUXER                    = new BlockMuxer(ReferenceNames.NAME_BLOCK_MUXER,                                   4.0f, 10f, 1, Material.ROCK);
-    public static final BlockAutoverse PIPE                     = new BlockPipe(ReferenceNames.NAME_BLOCK_PIPE,                                     4.0f, 10f, 1, Material.ROCK);
+    public static final BlockAutoverse PIPE                     = new BlockPipe(ReferenceNames.NAME_BLOCK_PIPE, false,                      4.0f, 10f, 1, Material.ROCK);
+    public static final BlockAutoverse OPAQUE_PIPE              = new BlockPipe(ReferenceNames.NAME_BLOCK_OPAQUE_PIPE, true,                4.0f, 10f, 1, Material.ROCK);
     public static final BlockAutoverse REDSTONE_EMITTER         = new BlockRedstoneEmitter(ReferenceNames.NAME_BLOCK_REDSTONE_EMITTER,              4.0f, 10f, 1, Material.ROCK);
     public static final BlockAutoverse SENSOR                   = new BlockSensor(ReferenceNames.NAME_BLOCK_SENSOR,                                 4.0f, 10f, 1, Material.ROCK);
     public static final BlockAutoverse SEQUENCE_DETECTOR        = new BlockSequenceDetector(ReferenceNames.NAME_BLOCK_SEQUENCE_DETECTOR,            4.0f, 10f, 1, Material.ROCK);
@@ -57,6 +58,7 @@ public class AutoverseBlocks
         registerBlock(registry, MACHINE_FRAME,          Configs.disableBlockMachineFrame);
         registerBlock(registry, MUXER,                  Configs.disableBlockMuxer);
         registerBlock(registry, PIPE,                   Configs.disableBlockPipe);
+        registerBlock(registry, OPAQUE_PIPE,            Configs.disableBlockOpaquePipe);
         registerBlock(registry, REDSTONE_EMITTER,       Configs.disableBlockRedstoneEmitter);
         registerBlock(registry, SENSOR,                 Configs.disableBlockSensor);
         registerBlock(registry, SEQUENCE_DETECTOR,      Configs.disableBlockSequenceDetector);
@@ -85,6 +87,7 @@ public class AutoverseBlocks
         registerItemBlock(registry, MACHINE_FRAME,          Configs.disableBlockMachineFrame);
         registerItemBlock(registry, MUXER,                  Configs.disableBlockMuxer);
         registerItemBlock(registry, PIPE,                   Configs.disableBlockPipe);
+        registerItemBlock(registry, OPAQUE_PIPE,            Configs.disableBlockOpaquePipe);
         registerItemBlock(registry, REDSTONE_EMITTER,       Configs.disableBlockRedstoneEmitter);
         registerItemBlock(registry, SENSOR,                 Configs.disableBlockSensor);
         registerItemBlock(registry, SEQUENCE_DETECTOR,      Configs.disableBlockSequenceDetector);

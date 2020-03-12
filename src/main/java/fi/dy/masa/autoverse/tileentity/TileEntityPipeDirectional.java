@@ -14,14 +14,14 @@ public class TileEntityPipeDirectional extends TileEntityPipe
 {
     protected int outputSidesMask;
 
-    public TileEntityPipeDirectional()
+    public TileEntityPipeDirectional(boolean noPacket)
     {
-        super(ReferenceNames.NAME_TILE_ENTITY_PIPE_DIRECTIONAL);
+        super(ReferenceNames.NAME_TILE_ENTITY_PIPE_DIRECTIONAL, noPacket);
     }
 
-    public TileEntityPipeDirectional(String name)
+    public TileEntityPipeDirectional(String name, boolean noPacket)
     {
-        super(name);
+        super(name, noPacket);
     }
 
     @Override

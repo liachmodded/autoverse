@@ -1,0 +1,14 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "transform": "forge:default-block"
+    },
+    "variants": {
+        "type": {
+            "basic":        { "model" : "autoverse:custom/pipe_basic_opaque"       },
+            "extraction":   { "model" : "autoverse:custom/pipe_extraction_opaque"  },
+            "directional":  { "model" : "autoverse:custom/pipe_directional_opaque" },
+            "roundrobin":   { "model" : "autoverse:custom/pipe_roundrobin_opaque"  }
+        }
+    }
+}

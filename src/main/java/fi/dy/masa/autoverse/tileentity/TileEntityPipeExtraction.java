@@ -21,9 +21,9 @@ public class TileEntityPipeExtraction extends TileEntityPipe
     private int disabledInputSides;
     private int validInputSides;
 
-    public TileEntityPipeExtraction()
+    public TileEntityPipeExtraction(boolean noPacket)
     {
-        super(ReferenceNames.NAME_TILE_ENTITY_PIPE_EXTRACTION);
+        super(ReferenceNames.NAME_TILE_ENTITY_PIPE_EXTRACTION, noPacket);
     }
 
     @Override

@@ -53,6 +53,7 @@ public class BakedModelPipe implements IBakedModel
     private static final String TEX_ROUNDROBIN_CONN     = Reference.MOD_ID + ":blocks/pipe_roundrobin_connection";
 
     private static final String TEX_SIDE_WINDOW         = Reference.MOD_ID + ":blocks/pipe_side_window";
+    private static final String TEX_SIDE_OPAQUE_WINDOW  = Reference.MOD_ID + ":blocks/pipe_side_window_opaque";
 
     public static final EnumFacing[] MODEL_FACES = new EnumFacing[] {
             EnumFacing.DOWN, EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST, null };
@@ -96,9 +97,11 @@ public class BakedModelPipe implements IBakedModel
     private final Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter;
     private final TextureAtlasSprite particle;
     private final BlockPipe.PipeType type;
+    private final boolean transparentWindow;
 
     private BakedModelPipe(
             BlockPipe.PipeType type,
+            boolean transparentWindow,
             IModel edgeModel,
             IModel sideModel,
             IModel connectionModelEdges,
@@ -112,6 +115,7 @@ public class BakedModelPipe implements IBakedModel
             Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter)
     {
         this.type = type;
+        this.transparentWindow = transparentWindow;
         this.edgeModel             = edgeModel              .retexture(ImmutableMap.of("edge", textures.get("edge")));
         this.sideModel             = sideModel              .retexture(ImmutableMap.of("side", textures.get("side")));
         this.connectionModelEdges  = connectionModelEdges   .retexture(ImmutableMap.of("edge", textures.get("edge")));
@@ -178,7 +182,7 @@ public class BakedModelPipe implements IBakedModel
         // Item model
         if (state == null)
         {
-            state = AutoverseBlocks.PIPE.getDefaultState().withProperty(BlockPipe.TYPE, this.type);
+            state = AutoverseBlocks.PIPE.getDefaultState().withProperty(BlockPipe.TYPE, this.type); // Pipe is just placeholder, opaque pipe fine also
 
             quads = isTranslucentLayer == false ? QUAD_CACHE_ITEMS.get(state) : ImmutableMap.of();
 
@@ -256,12 +260,12 @@ public class BakedModelPipe implements IBakedModel
     {
         List<IBakedModel> models = new ArrayList<IBakedModel>();
 
-        if (isTranslucentLayer)
+        if (isTranslucentLayer == transparentWindow)
         {
             this.addSides(state, models, modelStateIn);
             this.addSides(state, models, modelStateIn);
         }
-        else
+        if (!isTranslucentLayer)
         {
             this.addEdges(state, PositionUtils.SIDES_Y, EnumFacing.UP,    models, modelStateIn);
             this.addEdges(state, PositionUtils.SIDES_X, EnumFacing.EAST,  models, modelStateIn);
@@ -328,7 +332,6 @@ public class BakedModelPipe implements IBakedModel
     /**
      * Transforms a single side model ("window") to all six sides, for sides which don't have a connection.
      * @param state
-     * @param sides
      * @param models
      * @param modelStateIn
      */
@@ -360,7 +363,6 @@ public class BakedModelPipe implements IBakedModel
      * @param state
      * @param models
      * @param upAxis
-     * @param modelState
      */
     private void addCorners(IBlockState state, List<IBakedModel> models, EnumFacing upAxis, @Nullable IModelState modelStateIn)
     {
@@ -430,7 +432,7 @@ public class BakedModelPipe implements IBakedModel
                     default:
                 }
             }
-            else if (conn == BlockPipe.Connection.BASIC)
+            if (conn == BlockPipe.Connection.BASIC && isTranslucentLayer == transparentWindow)
             {
                 models.add(this.connectionModelSides.bake(modelState, this.format, this.bakedTextureGetter));
             }
@@ -449,11 +451,13 @@ public class BakedModelPipe implements IBakedModel
         private static final ResourceLocation CONNECTION_MODEL_SLIM  = new ResourceLocation(Reference.MOD_ID, "block/pipe_connection_slim");
 
         protected final BlockPipe.PipeType type;
+        protected final boolean transparentWindow;
         protected final Map<String, String> textures = new HashMap<String, String>();
 
-        protected ModelPipe(BlockPipe.PipeType type)
+        protected ModelPipe(BlockPipe.PipeType type, boolean transparentWindow)
         {
             this.type = type;
+            this.transparentWindow = transparentWindow;
         }
 
         @Override
@@ -520,7 +524,7 @@ public class BakedModelPipe implements IBakedModel
                 Autoverse.logger.warn("Failed to load a model for the Pipe!", e);
             }
 
-            return new BakedModelPipe(this.type, edgeModel, sideModel, connectionModelEdges, connectionModelSides,
+            return new BakedModelPipe(this.type, this.transparentWindow, edgeModel, sideModel, connectionModelEdges, connectionModelSides,
                     connectionModelFat, connectionModelSlim, cornerModels, this.getTextureMapping(), state, format, bakedTextureGetter);
         }
 
@@ -532,58 +536,62 @@ public class BakedModelPipe implements IBakedModel
 
     private static class ModelPipeBasic extends ModelPipe
     {
-        private ModelPipeBasic()
+        private ModelPipeBasic(boolean transparentWindow)
         {
-            super(BlockPipe.PipeType.BASIC);
+            super(BlockPipe.PipeType.BASIC, transparentWindow);
 
             this.textures.put("edge", TEX_BASIC_BASE);
             this.textures.put("type", TEX_BASIC_BASE); // Dummy, not used, but required
-            this.textures.put("side", TEX_SIDE_WINDOW);
+            this.textures.put("side", transparentWindow ? TEX_SIDE_WINDOW : TEX_SIDE_OPAQUE_WINDOW);
         }
     }
 
     private static class ModelPipeExtraction extends ModelPipe
     {
-        private ModelPipeExtraction()
+        private ModelPipeExtraction(boolean transparentWindow)
         {
-            super(BlockPipe.PipeType.EXTRACTION);
+            super(BlockPipe.PipeType.EXTRACTION, transparentWindow);
 
             this.textures.put("edge", TEX_EXTRACTION_EDGE);
             this.textures.put("type", TEX_EXTRACTION_CONN);
-            this.textures.put("side", TEX_SIDE_WINDOW);
+            this.textures.put("side", transparentWindow ? TEX_SIDE_WINDOW : TEX_SIDE_OPAQUE_WINDOW);
         }
     }
 
     private static class ModelPipeDirectional extends ModelPipe
     {
-        private ModelPipeDirectional()
+        private ModelPipeDirectional(boolean transparentWindow)
         {
-            super(BlockPipe.PipeType.DIRECTIONAL);
+            super(BlockPipe.PipeType.DIRECTIONAL, transparentWindow);
 
             this.textures.put("edge", TEX_DIRECTIONAL_EDGE);
             this.textures.put("type", TEX_DIRECTIONAL_CONN);
-            this.textures.put("side", TEX_SIDE_WINDOW);
+            this.textures.put("side", transparentWindow ? TEX_SIDE_WINDOW : TEX_SIDE_OPAQUE_WINDOW);
         }
     }
 
     private static class ModelPipeRoundRobin extends ModelPipe
     {
-        private ModelPipeRoundRobin()
+        private ModelPipeRoundRobin(boolean transparentWindow)
         {
-            super(BlockPipe.PipeType.ROUNDROBIN);
+            super(BlockPipe.PipeType.ROUNDROBIN, transparentWindow);
 
             this.textures.put("edge", TEX_ROUNDROBIN_EDGE);
             this.textures.put("type", TEX_ROUNDROBIN_CONN);
-            this.textures.put("side", TEX_SIDE_WINDOW);
+            this.textures.put("side", transparentWindow ? TEX_SIDE_WINDOW : TEX_SIDE_OPAQUE_WINDOW);
         }
     }
 
     public static class ModelLoaderPipe implements ICustomModelLoader
     {
         private static final ResourceLocation FAKE_LOCATION_BASIC       = new ResourceLocation(Reference.MOD_ID, "models/block/custom/pipe_basic");
+        private static final ResourceLocation FAKE_LOCATION_BASIC_OPAQUE       = new ResourceLocation(Reference.MOD_ID, "models/block/custom/pipe_basic_opaque");
         private static final ResourceLocation FAKE_LOCATION_EXTRACTION  = new ResourceLocation(Reference.MOD_ID, "models/block/custom/pipe_extraction");
+        private static final ResourceLocation FAKE_LOCATION_EXTRACTION_OPAQUE  = new ResourceLocation(Reference.MOD_ID, "models/block/custom/pipe_extraction_opaque");
         private static final ResourceLocation FAKE_LOCATION_DIRECTIONAL = new ResourceLocation(Reference.MOD_ID, "models/block/custom/pipe_directional");
+        private static final ResourceLocation FAKE_LOCATION_DIRECTIONAL_OPAQUE = new ResourceLocation(Reference.MOD_ID, "models/block/custom/pipe_directional_opaque");
         private static final ResourceLocation FAKE_LOCATION_ROUNDROBIN  = new ResourceLocation(Reference.MOD_ID, "models/block/custom/pipe_roundrobin");
+        private static final ResourceLocation FAKE_LOCATION_ROUNDROBIN_OPAQUE  = new ResourceLocation(Reference.MOD_ID, "models/block/custom/pipe_roundrobin_opaque");
 
         @Override
         public boolean accepts(ResourceLocation modelLocation)
@@ -591,7 +599,11 @@ public class BakedModelPipe implements IBakedModel
             return modelLocation.equals(FAKE_LOCATION_BASIC) ||
                    modelLocation.equals(FAKE_LOCATION_EXTRACTION) ||
                    modelLocation.equals(FAKE_LOCATION_DIRECTIONAL) ||
-                   modelLocation.equals(FAKE_LOCATION_ROUNDROBIN);
+                   modelLocation.equals(FAKE_LOCATION_ROUNDROBIN) ||
+                    modelLocation.equals(FAKE_LOCATION_BASIC_OPAQUE) ||
+                    modelLocation.equals(FAKE_LOCATION_DIRECTIONAL_OPAQUE) ||
+                    modelLocation.equals(FAKE_LOCATION_EXTRACTION_OPAQUE) ||
+                    modelLocation.equals(FAKE_LOCATION_ROUNDROBIN_OPAQUE);
         }
 
         @Override
@@ -599,19 +611,34 @@ public class BakedModelPipe implements IBakedModel
         {
             if (modelLocation.equals(FAKE_LOCATION_EXTRACTION))
             {
-                return new ModelPipeExtraction();
+                return new ModelPipeExtraction(true);
+            }
+            else if (modelLocation.equals(FAKE_LOCATION_EXTRACTION_OPAQUE)) {
+                return new ModelPipeExtraction(false);
             }
             else if (modelLocation.equals(FAKE_LOCATION_DIRECTIONAL))
             {
-                return new ModelPipeDirectional();
+                return new ModelPipeDirectional(true);
+            }
+            else if (modelLocation.equals(FAKE_LOCATION_DIRECTIONAL_OPAQUE))
+            {
+                return new ModelPipeDirectional(false);
             }
             else if (modelLocation.equals(FAKE_LOCATION_ROUNDROBIN))
             {
-                return new ModelPipeRoundRobin();
+                return new ModelPipeRoundRobin(true);
+            }
+            else if (modelLocation.equals(FAKE_LOCATION_ROUNDROBIN_OPAQUE))
+            {
+                return new ModelPipeRoundRobin(false);
+            }
+            else if (modelLocation.equals(FAKE_LOCATION_BASIC_OPAQUE))
+            {
+                return new ModelPipeBasic(false);
             }
             else
             {
-                return new ModelPipeBasic();
+                return new ModelPipeBasic(true);
             }
         }
 
@@ -626,20 +653,27 @@ public class BakedModelPipe implements IBakedModel
 
     public static class StateMapper extends StateMapperBase
     {
-        private static final ModelResourceLocation LOCATION_BASIC       = new ModelResourceLocation(Reference.MOD_ID + ":pipe", "type=basic");
-        private static final ModelResourceLocation LOCATION_EXTRACTION  = new ModelResourceLocation(Reference.MOD_ID + ":pipe", "type=extraction");
-        private static final ModelResourceLocation LOCATION_DIRECTIONAL = new ModelResourceLocation(Reference.MOD_ID + ":pipe", "type=directional");
-        private static final ModelResourceLocation LOCATION_ROUNDROBIN  = new ModelResourceLocation(Reference.MOD_ID + ":pipe", "type=roundrobin");
+        private final ModelResourceLocation basic;
+        private final ModelResourceLocation extraction;
+        private final ModelResourceLocation directional;
+        private final ModelResourceLocation roundrobin;
+        
+        public StateMapper(String name) {
+            basic = new ModelResourceLocation(Reference.MOD_ID + ":" + name, "type=basic");
+            extraction = new ModelResourceLocation(Reference.MOD_ID + ":" + name, "type=extraction");
+            directional = new ModelResourceLocation(Reference.MOD_ID + ":" + name, "type=directional");
+            roundrobin = new ModelResourceLocation(Reference.MOD_ID + ":" + name, "type=roundrobin");
+        }
 
         @Override
         protected ModelResourceLocation getModelResourceLocation(IBlockState state)
         {
             switch (state.getValue(BlockPipe.TYPE))
             {
-                case EXTRACTION:    return LOCATION_EXTRACTION;
-                case DIRECTIONAL:   return LOCATION_DIRECTIONAL;
-                case ROUNDROBIN:    return LOCATION_ROUNDROBIN;
-                default:            return LOCATION_BASIC;
+                case EXTRACTION:    return extraction;
+                case DIRECTIONAL:   return directional;
+                case ROUNDROBIN:    return roundrobin;
+                default:            return basic;
             }
         }
     }

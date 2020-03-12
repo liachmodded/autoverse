@@ -16,6 +16,7 @@ public class ReferenceNames
     public static final String NAME_BLOCK_MACHINE_FRAME             = "machine_frame";
     public static final String NAME_BLOCK_MUXER                     = "muxer";
     public static final String NAME_BLOCK_PIPE                      = "pipe";
+    public static final String NAME_BLOCK_OPAQUE_PIPE               = "opaque_pipe";
     public static final String NAME_BLOCK_PLACER                    = "placer";
     public static final String NAME_BLOCK_REDSTONE_EMITTER          = "redstone_emitter";
     public static final String NAME_BLOCK_SENSOR                    = "sensor";
